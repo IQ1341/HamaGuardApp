@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../widgets/costum_header.dart';
 
 class ControlScreen extends StatefulWidget {
   const ControlScreen({super.key});
@@ -26,10 +27,8 @@ class _ControlScreenState extends State<ControlScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Kontrol Sistem'),
-        backgroundColor: Colors.green[700],
-        centerTitle: true,
+      appBar: const CustomHeader(
+        deviceName: 'HamaGuard', // ini wajib diisi
       ),
       body: Padding(
         padding: const EdgeInsets.all(20),

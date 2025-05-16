@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import '../../widgets/thermal_grid.dart';
+import '../../widgets/costum_header.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -19,6 +20,9 @@ class DashboardScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Colors.grey[100],
+      appBar: const CustomHeader(
+        deviceName: 'HamaGuard', // ini wajib diisi
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -26,7 +30,8 @@ class DashboardScreen extends StatelessWidget {
             // Thermal Sensor dalam Card
             Card(
               elevation: 4,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16)),
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
@@ -83,24 +88,6 @@ class DashboardScreen extends StatelessWidget {
               value: sensorData['Status Pengusir']!,
               icon: Icons.speaker,
               color: Colors.green,
-            ),
-
-            const SizedBox(height: 20),
-
-            // Tombol pengusir manual
-            ElevatedButton.icon(
-              onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Fitur pengusir manual belum tersedia')),
-                );
-              },
-              icon: const Icon(Icons.play_arrow),
-              label: const Text('Aktifkan Pengusir Manual'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green[700],
-                minimumSize: const Size.fromHeight(48),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              ),
             ),
           ],
         ),
