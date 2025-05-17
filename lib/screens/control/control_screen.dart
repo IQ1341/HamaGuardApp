@@ -49,6 +49,7 @@ class _ControlScreenState extends State<ControlScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[100],
       appBar: const CustomHeader(
         deviceName: 'HamaGuard',
       ),

@@ -23,7 +23,6 @@ class SettingScreen extends StatelessWidget {
             trailing: Switch(
               value: true, // sementara default ON, nanti bisa dihubungkan state nyata
               onChanged: (val) {
-                // TODO: handle perubahan mode
               },
             ),
           ),
@@ -37,7 +36,7 @@ class SettingScreen extends StatelessWidget {
             trailing: Switch(
               value: true,
               onChanged: (val) {
-                // TODO: handle toggle notifikasi
+            
               },
             ),
           ),
@@ -49,7 +48,6 @@ class SettingScreen extends StatelessWidget {
             leading: const Icon(Icons.refresh),
             title: const Text('Reset Data'),
             onTap: () {
-              // TODO: implement reset data
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('Data direset')),
               );

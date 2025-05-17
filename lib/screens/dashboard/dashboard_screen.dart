@@ -20,9 +20,14 @@ class DashboardScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Colors.grey[100],
-      appBar: const CustomHeader(
-        deviceName: 'HamaGuard', // ini wajib diisi
+      appBar: CustomHeader(
+        deviceName: 'HamaGuard',
+        notificationCount: 5,
+        onNotificationTap: () {
+          // Aksi saat lonceng ditekan
+        },
       ),
+
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -42,7 +47,7 @@ class DashboardScreen extends StatelessWidget {
                         Icon(Icons.thermostat_outlined, color: Colors.red),
                         SizedBox(width: 8),
                         Text(
-                          'Thermal AMG8833 (8x8)',
+                          'Thermal Sensor',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 16,

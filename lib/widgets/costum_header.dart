@@ -4,11 +4,13 @@ import 'package:intl/intl.dart';
 class CustomHeader extends StatefulWidget implements PreferredSizeWidget {
   final String deviceName;
   final VoidCallback? onNotificationTap;
+  final int notificationCount; // Tambahan
 
   const CustomHeader({
     super.key,
     required this.deviceName,
     this.onNotificationTap,
+    this.notificationCount = 0,
   });
 
   @override
@@ -26,17 +28,13 @@ class _CustomHeaderState extends State<CustomHeader> {
   void initState() {
     super.initState();
     _updateDate();
-    // Update setiap hari (atau bisa sesuaikan interval jika perlu)
     ticker = Stream.periodic(const Duration(minutes: 1)).listen((_) {
-      if (mounted) {
-        _updateDate();
-      }
+      if (mounted) _updateDate();
     });
   }
 
   void _updateDate() {
     final now = DateTime.now();
-    // Format hanya tanggal: Contoh "Fri, 16 May 2025"
     final formatted = DateFormat('EEE, dd MMM yyyy').format(now);
     setState(() {
       _dateString = formatted;
@@ -59,7 +57,7 @@ class _CustomHeaderState extends State<CustomHeader> {
       title: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Nama alat dan tanggal di kiri
+          // Nama alat dan tanggal
           Padding(
             padding: const EdgeInsets.only(right: 8.0),
             child: Column(
@@ -71,7 +69,7 @@ class _CustomHeaderState extends State<CustomHeader> {
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
-                    color: Colors.black87,
+                    color: Color.fromARGB(255, 56, 142, 60),
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -86,25 +84,57 @@ class _CustomHeaderState extends State<CustomHeader> {
               ],
             ),
           ),
-
           const Spacer(),
 
-          // Lonceng dalam lingkaran abu-abu lembut
+          // Icon lonceng + badge notifikasi
           Padding(
             padding: const EdgeInsets.only(left: 8.0),
             child: Material(
-              color: Colors.grey.shade200,
+              color: const Color.fromARGB(255, 198, 215, 197),
               shape: const CircleBorder(),
-              child: IconButton(
-                padding: const EdgeInsets.all(8),
-                icon: const Icon(Icons.notifications_none, color: Colors.black87, size: 28),
-                onPressed: widget.onNotificationTap ??
-                    () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Notifikasi belum tersedia')),
-                      );
-                    },
-                splashRadius: 24,
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  IconButton(
+                    padding: const EdgeInsets.all(8),
+                    icon: const Icon(Icons.notifications_none,
+                        color: Colors.black87, size: 28),
+                    onPressed: widget.onNotificationTap ??
+                        () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text('Notifikasi belum tersedia')),
+                          );
+                        },
+                    splashRadius: 24,
+                  ),
+
+                  // Badge jika notificationCount > 0
+                  if (widget.notificationCount > 0)
+                    Positioned(
+                      right: 4,
+                      top: 4,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: Colors.red,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        constraints: const BoxConstraints(minWidth: 16),
+                        child: Text(
+                          widget.notificationCount > 99
+                              ? '99+'
+                              : '${widget.notificationCount}',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
               ),
             ),
           ),
