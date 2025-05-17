@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../widgets/costum_header.dart';
+import '../../screens/notification/notification_screen.dart';
 
 class ControlScreen extends StatefulWidget {
   const ControlScreen({super.key});
@@ -50,9 +51,19 @@ class _ControlScreenState extends State<ControlScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[100],
-      appBar: const CustomHeader(
+      appBar: CustomHeader(
         deviceName: 'HamaGuard',
+        notificationCount: 5,
+        onNotificationTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => NotificationScreen(),
       ),
+          );
+        },
+      ),
+
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(

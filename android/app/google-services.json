@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "144700563392",
+    "project_id": "hamaguard-e911d",
+    "storage_bucket": "hamaguard-e911d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:144700563392:android:913dfe0c4205cca8e4b225",
+        "android_client_info": {
+          "package_name": "com.example.hamaguard"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDgtq_bU0aNjKwErdns50EldaRRSdd5Sg0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
