@@ -16,9 +16,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
   late DatabaseReference _thermalRef;
 
   Map<String, dynamic> sensorData = {
-    'PIR': 'Memuat...',
-    'Ultrasonik': 'Memuat...',
-    'Status Pengusir': 'Memuat...',
+    'PIR': '0',
+    'Ultrasonik': '0',
+    'Status Pengusir': '0',
   };
 
   List<double> thermalData = List.filled(64, 0.0);
@@ -30,7 +30,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
     _sensorRef = FirebaseDatabase.instance.ref('sensor');
     _thermalRef = FirebaseDatabase.instance.ref('thermal/temperatures');
 
-    // Listener sensor data
     _sensorRef.onValue.listen((event) {
       final data = event.snapshot.value;
       if (data != null && data is Map) {
@@ -46,11 +45,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
       }
     });
 
-    // Listener thermal data
     _thermalRef.onValue.listen((event) {
       final data = event.snapshot.value;
       if (data != null) {
-        // Firebase RTDB terkadang mengirim List<dynamic> atau Map<dynamic,dynamic>
         List<double> temps = [];
         if (data is List) {
           temps = data.map<double>((e) {
@@ -58,7 +55,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
             return 0.0;
           }).toList();
         } else if (data is Map) {
-          // Jika data disimpan sebagai Map index:string -> value
           temps = List<double>.filled(64, 0);
           data.forEach((key, value) {
             int idx = int.tryParse(key) ?? -1;
@@ -82,7 +78,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: const Color.fromARGB(255, 242, 242, 242),
       appBar: CustomHeader(
         deviceName: 'HamaGuard',
         notificationCount: 5,
@@ -94,39 +90,47 @@ class _DashboardScreenState extends State<DashboardScreen> {
         },
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         child: Column(
           children: [
-            // Thermal Sensor
+            // Thermal Sensor Card
             Card(
-              elevation: 4,
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16)),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              elevation: 2,
+              shadowColor: Colors.green.withOpacity(0.2),
+              color: Colors.white,
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
                       children: const [
-                        Icon(Icons.thermostat_outlined, color: Colors.red),
-                        SizedBox(width: 8),
+                        Icon(Icons.thermostat_outlined,
+                            color: Colors.deepOrangeAccent, size: 30),
+                        SizedBox(width: 12),
                         Text(
                           'Thermal Sensor',
                           style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 16),
+                            fontWeight: FontWeight.w600,
+                            fontSize: 20,
+                            color: Colors.deepOrangeAccent,
+                          ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 16),
                     ThermalHeatmap(temperatures: thermalData),
                   ],
                 ),
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 24),
 
-            // PIR & Ultrasonik
+            // Sensor Cards row (PIR & Ultrasonik)
             Row(
               children: [
                 Expanded(
@@ -134,28 +138,29 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     title: 'PIR',
                     value: sensorData['PIR'] ?? '-',
                     icon: Icons.motion_photos_on_outlined,
-                    color: Colors.orange,
+                    color: Colors.orange.shade700,
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 20),
                 Expanded(
                   child: SensorCard(
-                    title: 'Ultrasonik',
+                    title: 'Jarak',
                     value: sensorData['Ultrasonik'] ?? '-',
                     icon: Icons.straighten,
-                    color: Colors.blue,
+                    color: Colors.blue.shade700,
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 20),
 
             // Status Pengusir
             SensorCard(
               title: 'Status Pengusir',
               value: sensorData['Status Pengusir'] ?? '-',
               icon: Icons.speaker,
-              color: Colors.green,
+              color: Colors.green.shade700,
+              isWide: true,
             ),
           ],
         ),
@@ -169,6 +174,7 @@ class SensorCard extends StatelessWidget {
   final String value;
   final IconData icon;
   final Color color;
+  final bool isWide;
 
   const SensorCard({
     super.key,
@@ -176,20 +182,56 @@ class SensorCard extends StatelessWidget {
     required this.value,
     required this.icon,
     required this.color,
+    this.isWide = false,
   });
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 3,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: ListTile(
-        leading: CircleAvatar(
-          backgroundColor: color.withAlpha(15),
-          child: Icon(icon, color: color),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      elevation: 2, // shadow tipis
+      shadowColor: color.withOpacity(0.1), // lebih transparan
+      color: Colors.white,
+      child: Container(
+        width: isWide ? double.infinity : null,
+        padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+        child: Row(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.15),
+                borderRadius: BorderRadius.circular(14),
+              ),
+              padding: const EdgeInsets.all(12),
+              child: Icon(icon, size: 30, color: color),
+            ),
+            const SizedBox(width: 20),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      color: color.withOpacity(0.9),
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    value,
+                    style: TextStyle(
+                      fontWeight: FontWeight.w400,
+                      fontSize: 15,
+                      color: Colors.grey[800],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
-        title: Text(title),
-        subtitle: Text(value),
       ),
     );
   }

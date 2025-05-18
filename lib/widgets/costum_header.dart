@@ -69,7 +69,7 @@ class _CustomHeaderState extends State<CustomHeader> {
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
-                    color: Color.fromARGB(255, 56, 142, 60),
+                    color: Color.fromRGBO(56, 142, 60, 1),
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -90,7 +90,7 @@ class _CustomHeaderState extends State<CustomHeader> {
           Padding(
             padding: const EdgeInsets.only(left: 8.0),
             child: Material(
-              color: const Color.fromARGB(255, 198, 215, 197),
+              color: const Color.fromARGB(255, 219, 230, 221),
               shape: const CircleBorder(),
               child: Stack(
                 clipBehavior: Clip.none,
@@ -98,7 +98,7 @@ class _CustomHeaderState extends State<CustomHeader> {
                   IconButton(
                     padding: const EdgeInsets.all(8),
                     icon: const Icon(Icons.notifications_none,
-                        color: Colors.black87, size: 28),
+                        color: Color.fromARGB(221, 57, 35, 35), size: 28),
                     onPressed: widget.onNotificationTap ??
                         () {
                           ScaffoldMessenger.of(context).showSnackBar(

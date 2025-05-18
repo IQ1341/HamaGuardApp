@@ -8,11 +8,33 @@ class ThermalHeatmap extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: SizedBox(
-        width: 300,
-        height: 300,
-        child: CustomPaint(
-          painter: _ThermalPainter(temperatures),
+      child: Container(
+        width: 310,
+        height: 310,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(
+            color: Colors.deepOrangeAccent.withOpacity(0.6),
+            width: 3,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.deepOrangeAccent.withOpacity(0.15),
+              blurRadius: 8,
+              spreadRadius: 1,
+              offset: Offset(0, 3),
+            ),
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(18),
+          child: SizedBox(
+            width: 300,
+            height: 300,
+            child: CustomPaint(
+              painter: _ThermalPainter(temperatures),
+            ),
+          ),
         ),
       ),
     );
@@ -50,13 +72,7 @@ class _ThermalPainter extends CustomPainter {
       }
     }
 
-    final center = Offset(size.width / 2, size.height / 2);
-    final plusPaint = Paint()
-      ..color = Colors.white.withOpacity(0.95)
-      ..strokeWidth = 2
-      ..strokeCap = StrokeCap.round;
-    canvas.drawLine(center - const Offset(10, 0), center + const Offset(10, 0), plusPaint);
-    canvas.drawLine(center - const Offset(0, 10), center + const Offset(0, 10), plusPaint);
+    // Garis putih di tengah dihilangkan (dihapus)
   }
 
   Color _getColorForTemp(double t) {

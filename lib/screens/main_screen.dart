@@ -70,7 +70,7 @@ class _MainScreenState extends State<MainScreen> {
         child: FloatingActionButton(
           onPressed: () => _onItemTapped(0), // Dashboard / Monitoring di tengah
           backgroundColor:
-              _selectedIndex == 0 ? Colors.green[700] : Colors.green[400],
+              _selectedIndex == 0 ? const Color.fromRGBO(56, 142, 60, 1) : Colors.green[400],
           elevation: _selectedIndex == 0 ? 8 : 4,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(35),
@@ -87,7 +87,7 @@ class _MainScreenState extends State<MainScreen> {
           shape: const CircularNotchedRectangle(),
           notchMargin: 8,
           elevation: 8,
-          color: Colors.white,
+          color: const Color.fromARGB(255, 255, 255, 255),
           child: SizedBox(
             height: 60,
             child: Row(
