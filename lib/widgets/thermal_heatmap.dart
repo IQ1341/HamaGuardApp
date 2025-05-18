@@ -14,12 +14,12 @@ class ThermalHeatmap extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(18),
           border: Border.all(
-            color: Colors.deepOrangeAccent.withOpacity(0.6),
+            color: const Color.fromRGBO(56, 142, 60, 1).withOpacity(0.6),
             width: 3,
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.deepOrangeAccent.withOpacity(0.15),
+              color: const Color.fromRGBO(56, 142, 60, 1).withOpacity(0.15),
               blurRadius: 8,
               spreadRadius: 1,
               offset: Offset(0, 3),

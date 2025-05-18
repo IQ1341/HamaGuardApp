@@ -11,28 +11,41 @@ class ControlScreen extends StatefulWidget {
 
 class _ControlScreenState extends State<ControlScreen> {
   bool isAutoMode = true; // default: mode otomatis
+  bool isRepellerOn = false; // status pengusir (manual mode)
 
   void toggleMode() {
     setState(() {
       isAutoMode = !isAutoMode;
+      if (isAutoMode) {
+        isRepellerOn = false; // reset repeller saat mode otomatis
+      }
     });
   }
 
-  void triggerRepeller() {
+  void toggleRepeller() {
+    setState(() {
+      isRepellerOn = !isRepellerOn;
+    });
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Row(
+        title: Row(
           children: [
-            Icon(Icons.check_circle_outline, color: Colors.green),
-            SizedBox(width: 8),
-            Text('Berhasil'),
+            Icon(
+              isRepellerOn ? Icons.check_circle : Icons.power_settings_new,
+              color: isRepellerOn ? Colors.green : Colors.grey,
+            ),
+            const SizedBox(width: 8),
+            Text(isRepellerOn ? 'Diaktifkan' : 'Dimatikan'),
           ],
         ),
-        content: const Text(
-          'Pengusir hama berhasil diaktifkan secara manual.',
-          style: TextStyle(fontSize: 16),
+        content: Text(
+          isRepellerOn
+              ? 'Pengusir hama berhasil diaktifkan.'
+              : 'Pengusir hama dimatikan.',
+          style: const TextStyle(fontSize: 16),
         ),
         actions: [
           TextButton(
@@ -59,51 +72,53 @@ class _ControlScreenState extends State<ControlScreen> {
             context,
             MaterialPageRoute(
               builder: (context) => NotificationScreen(),
-      ),
+            ),
           );
         },
       ),
-
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const SizedBox(height: 10),
-            const Text(
-              'Mode Operasi',
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 16),
             Card(
-              elevation: 3,
+              elevation: 4,
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              color: isAutoMode ? Colors.blue.shade50 : Colors.orange.shade50,
               child: Padding(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(20),
                 child: Row(
                   children: [
-                    Icon(
-                      isAutoMode ? Icons.autorenew : Icons.handyman,
-                      color: isAutoMode ? Colors.blue : Colors.orange,
-                      size: 36,
+                    CircleAvatar(
+                      backgroundColor: isAutoMode ? Colors.blue : Colors.orange,
+                      radius: 28,
+                      child: Icon(
+                        isAutoMode ? Icons.autorenew : Icons.handyman,
+                        color: Colors.white,
+                        size: 30,
+                      ),
                     ),
-                    const SizedBox(width: 16),
+                    const SizedBox(width: 20),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             isAutoMode ? 'Mode Otomatis' : 'Mode Manual',
-                            style: const TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.w600),
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: isAutoMode ? Colors.blue : Colors.orange,
+                            ),
                           ),
-                          const SizedBox(height: 4),
+                          const SizedBox(height: 6),
                           Text(
                             isAutoMode
-                                ? 'Alat akan bekerja secara otomatis sesuai sensor'
-                                : 'Kamu dapat mengaktifkan alat secara manual',
-                            style: const TextStyle(
-                                fontSize: 14, color: Colors.grey),
+                                ? 'Alat akan aktif otomatis sesuai sensor.'
+                                : 'Kamu dapat mengendalikan alat secara manual.',
+                            style: const TextStyle(color: Colors.black87),
                           ),
                         ],
                       ),
@@ -117,19 +132,74 @@ class _ControlScreenState extends State<ControlScreen> {
                 ),
               ),
             ),
-            const SizedBox(height: 30),
+
+            const SizedBox(height: 20),
+
+            // CARD 2: STATUS PENGUSIR (Tampil hanya di mode manual)
+            if (!isAutoMode)
+              Card(
+                elevation: 4,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                color:
+                    isRepellerOn ? Colors.green.shade50 : Colors.grey.shade100,
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Row(
+                    children: [
+                      Icon(
+                        isRepellerOn
+                            ? Icons.volume_up_rounded
+                            : Icons.volume_off_rounded,
+                        color: isRepellerOn ? Colors.green : Colors.grey,
+                        size: 32,
+                      ),
+                      const SizedBox(width: 20),
+                      Expanded(
+                        child: Text(
+                          isRepellerOn
+                              ? 'Pengusir aktif secara manual.'
+                              : 'Pengusir dalam keadaan mati.',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: isRepellerOn
+                                ? Colors.green.shade700
+                                : Colors.grey,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+            const SizedBox(height: 20),
+
+            // TOMBOL AKSI (Manual mode)
             if (!isAutoMode)
               ElevatedButton.icon(
-                onPressed: triggerRepeller,
-                icon: const Icon(Icons.volume_up),
-                label: const Text('Aktifkan Pengusir Sekarang'),
+                onPressed: toggleRepeller,
+                icon: Icon(
+                  isRepellerOn
+                      ? Icons.power_settings_new_rounded
+                      : Icons.volume_up_rounded,
+                ),
+                label: Text(
+                  isRepellerOn
+                      ? 'Matikan Pengusir'
+                      : 'Aktifkan Pengusir Sekarang',
+                  style: const TextStyle(fontSize: 16),
+                ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
+                  backgroundColor:
+                      isRepellerOn ? Colors.grey.shade700 : Colors.red.shade600,
                   foregroundColor: Colors.white,
                   padding:
-                      const EdgeInsets.symmetric(vertical: 14, horizontal: 24),
+                      const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
+                      borderRadius: BorderRadius.circular(14)),
                   minimumSize: const Size.fromHeight(50),
                 ),
               ),

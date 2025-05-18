@@ -78,7 +78,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 242, 242, 242),
+      backgroundColor: Colors.grey[100],
       appBar: CustomHeader(
         deviceName: 'HamaGuard',
         notificationCount: 5,
@@ -110,14 +110,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     Row(
                       children: const [
                         Icon(Icons.thermostat_outlined,
-                            color: Colors.deepOrangeAccent, size: 30),
+                            color: Color.fromRGBO(56, 142, 60, 1), size: 30),
                         SizedBox(width: 12),
                         Text(
                           'Thermal Sensor',
                           style: TextStyle(
                             fontWeight: FontWeight.w600,
                             fontSize: 20,
-                            color: Colors.deepOrangeAccent,
+                            color: Color.fromRGBO(56, 142, 60, 1),
                           ),
                         ),
                       ],

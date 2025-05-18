@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 class CustomHeader extends StatefulWidget implements PreferredSizeWidget {
   final String deviceName;
   final VoidCallback? onNotificationTap;
-  final int notificationCount; // Tambahan
+  final int notificationCount;
 
   const CustomHeader({
     super.key,
@@ -14,7 +14,8 @@ class CustomHeader extends StatefulWidget implements PreferredSizeWidget {
   });
 
   @override
-  Size get preferredSize => const Size.fromHeight(kToolbarHeight + 24);
+  Size get preferredSize =>
+      const Size.fromHeight(100); // Disesuaikan agar tidak overflow
 
   @override
   State<CustomHeader> createState() => _CustomHeaderState();
@@ -49,67 +50,67 @@ class _CustomHeaderState extends State<CustomHeader> {
 
   @override
   Widget build(BuildContext context) {
-    return AppBar(
-      backgroundColor: Colors.transparent,
-      elevation: 0,
-      automaticallyImplyLeading: false,
-      titleSpacing: 16,
-      title: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          // Nama alat dan tanggal
-          Padding(
-            padding: const EdgeInsets.only(right: 8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  widget.deviceName,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    color: Color.fromRGBO(56, 142, 60, 1),
+    return ClipRRect(
+      borderRadius: const BorderRadius.only(
+        bottomLeft: Radius.circular(24),
+        bottomRight: Radius.circular(24),
+      ),
+      child: Container(
+        color: Colors.green[700],
+        padding:
+            const EdgeInsets.only(top: 16, left: 16, right: 16, bottom: 16),
+        child: SafeArea(
+          bottom: false,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              // Nama alat dan tanggal
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    widget.deviceName,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  _dateString,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey[600],
-                    height: 1.2,
+                  const SizedBox(height: 4),
+                  Text(
+                    _dateString,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.white70,
+                      height: 1.2,
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ),
-          const Spacer(),
+                ],
+              ),
+              const Spacer(),
 
-          // Icon lonceng + badge notifikasi
-          Padding(
-            padding: const EdgeInsets.only(left: 8.0),
-            child: Material(
-              color: const Color.fromARGB(255, 219, 230, 221),
-              shape: const CircleBorder(),
-              child: Stack(
+              // Icon notifikasi
+              Stack(
                 clipBehavior: Clip.none,
                 children: [
-                  IconButton(
-                    padding: const EdgeInsets.all(8),
-                    icon: const Icon(Icons.notifications_none,
-                        color: Color.fromARGB(221, 57, 35, 35), size: 28),
-                    onPressed: widget.onNotificationTap ??
-                        () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                                content: Text('Notifikasi belum tersedia')),
-                          );
-                        },
-                    splashRadius: 24,
+                  Material(
+                    color: Colors.green[600],
+                    shape: const CircleBorder(),
+                    child: IconButton(
+                      padding: const EdgeInsets.all(8),
+                      icon: const Icon(Icons.notifications_none,
+                          color: Colors.white, size: 28),
+                      onPressed: widget.onNotificationTap ??
+                          () {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text('Notifikasi belum tersedia')),
+                            );
+                          },
+                      splashRadius: 24,
+                    ),
                   ),
-
-                  // Badge jika notificationCount > 0
                   if (widget.notificationCount > 0)
                     Positioned(
                       right: 4,
@@ -136,9 +137,9 @@ class _CustomHeaderState extends State<CustomHeader> {
                     ),
                 ],
               ),
-            ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
