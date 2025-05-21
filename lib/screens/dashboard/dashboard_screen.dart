@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
-import '../../widgets/thermal_heatmap.dart';
+import '../../widgets/thermal_heatmap.dart'; // Pastikan widget ini sudah kamu buat
 import '../../widgets/costum_header.dart';
 import '../notification/notification_screen.dart';
 
@@ -28,8 +28,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
     super.initState();
 
     _sensorRef = FirebaseDatabase.instance.ref('sensor');
-    _thermalRef = FirebaseDatabase.instance.ref('thermal/temperatures');
+    _thermalRef =
+        FirebaseDatabase.instance.ref('thermal_data'); // <- Sesuaikan di sini
 
+    // Listener untuk data sensor PIR, Ultrasonik, Pengusir
     _sensorRef.onValue.listen((event) {
       final data = event.snapshot.value;
       if (data != null && data is Map) {
@@ -45,31 +47,22 @@ class _DashboardScreenState extends State<DashboardScreen> {
       }
     });
 
+    // Listener untuk data thermal sensor
     _thermalRef.onValue.listen((event) {
       final data = event.snapshot.value;
-      if (data != null) {
-        List<double> temps = [];
-        if (data is List) {
-          temps = data.map<double>((e) {
+      if (data != null && data is Map) {
+        final tempsData = data['temperatures'];
+        if (tempsData != null && tempsData is List) {
+          List<double> temps = tempsData.map<double>((e) {
             if (e is num) return e.toDouble();
             return 0.0;
           }).toList();
-        } else if (data is Map) {
-          temps = List<double>.filled(64, 0);
-          data.forEach((key, value) {
-            int idx = int.tryParse(key) ?? -1;
-            if (idx >= 0 && idx < 64) {
-              if (value is num) {
-                temps[idx] = value.toDouble();
-              }
-            }
-          });
-        }
 
-        if (temps.length == 64) {
-          setState(() {
-            thermalData = temps;
-          });
+          if (temps.length == 64) {
+            setState(() {
+              thermalData = temps;
+            });
+          }
         }
       }
     });
@@ -189,8 +182,8 @@ class SensorCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      elevation: 2, // shadow tipis
-      shadowColor: color.withOpacity(0.1), // lebih transparan
+      elevation: 2,
+      shadowColor: color.withOpacity(0.1),
       color: Colors.white,
       child: Container(
         width: isWide ? double.infinity : null,

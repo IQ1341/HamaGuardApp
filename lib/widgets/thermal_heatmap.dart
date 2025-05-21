@@ -75,15 +75,23 @@ class _ThermalPainter extends CustomPainter {
     // Garis putih di tengah dihilangkan (dihapus)
   }
 
-  Color _getColorForTemp(double t) {
-    double norm = ((t - 20) / 20).clamp(0.0, 1.0);
-    return HSVColor.lerp(
-      HSVColor.fromColor(Colors.blue),
-      HSVColor.fromColor(Colors.red),
-      norm,
-    )!
-        .toColor();
+Color _getColorForTemp(double t) {
+    if (t <= 20) {
+      return Colors.blue;
+    } else if (t <= 25) {
+      double ratio = (t - 20) / 5;
+      return Color.lerp(Colors.blue, Colors.green, ratio)!;
+    } else if (t <= 28) {
+      double ratio = (t - 25) / 3;
+      return Color.lerp(Colors.green, Colors.yellow, ratio)!;
+    } else if (t < 30) {
+      double ratio = (t - 28) / 2;
+      return Color.lerp(Colors.yellow, Colors.red, ratio)!;
+    } else {
+      return Colors.red;
+    }
   }
+
 
   @override
   bool shouldRepaint(covariant _ThermalPainter oldDelegate) {
