@@ -18,7 +18,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Map<String, dynamic> sensorData = {
     'PIR': '0',
     'Ultrasonik': '0',
-    'Status Pengusir': '0',
+    'Jenis Deteksi': 'Tidak terdeteksi',
   };
 
   List<double> thermalData = List.filled(64, 0.0);
@@ -28,10 +28,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
     super.initState();
 
     _sensorRef = FirebaseDatabase.instance.ref('sensor');
-    _thermalRef =
-        FirebaseDatabase.instance.ref('thermal_data'); // <- Sesuaikan di sini
+    _thermalRef = FirebaseDatabase.instance.ref('thermal_data');
 
-    // Listener untuk data sensor PIR, Ultrasonik, Pengusir
     _sensorRef.onValue.listen((event) {
       final data = event.snapshot.value;
       if (data != null && data is Map) {
@@ -40,14 +38,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
             'PIR': (data['pir'] == true) ? 'Terdeteksi' : 'Tidak',
             'Ultrasonik':
                 data['ultrasonik'] != null ? '${data['ultrasonik']} cm' : '-',
-            'Status Pengusir':
-                (data['pengusir'] == true) ? 'Aktif' : 'Nonaktif',
+            'Jenis Deteksi': data['jenis_deteksi'] != null
+                ? data['jenis_deteksi'].toString()
+                : 'Tidak terdeteksi',
           };
         });
       }
     });
 
-    // Listener untuk data thermal sensor
     _thermalRef.onValue.listen((event) {
       final data = event.snapshot.value;
       if (data != null && data is Map) {
@@ -147,11 +145,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ),
             const SizedBox(height: 20),
 
-            // Status Pengusir
+            // Ganti Status Pengusir jadi Jenis Deteksi
             SensorCard(
-              title: 'Status Pengusir',
-              value: sensorData['Status Pengusir'] ?? '-',
-              icon: Icons.speaker,
+              title: 'Jenis Deteksi',
+              value: sensorData['Jenis Deteksi'] ?? '-',
+              icon: Icons.info_outline,
               color: Colors.green.shade700,
               isWide: true,
             ),
@@ -196,9 +194,9 @@ class SensorCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(14),
               ),
               padding: const EdgeInsets.all(12),
-              child: Icon(icon, size: 30, color: color),
+              child: Icon(icon, size: 20, color: color),
             ),
-            const SizedBox(width: 20),
+            const SizedBox(width: 10),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -216,7 +214,7 @@ class SensorCard extends StatelessWidget {
                     value,
                     style: TextStyle(
                       fontWeight: FontWeight.w400,
-                      fontSize: 15,
+                      fontSize: 14,
                       color: Colors.grey[800],
                     ),
                   ),
