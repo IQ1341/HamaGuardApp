@@ -1,34 +1,14 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class NotificationScreen extends StatelessWidget {
-  final List<Map<String, String>> notifications = [
-    {
-      "type": "warning",
-      "title": "Peringatan!",
-      "message": "Hama terdeteksi di area sawah A.",
-      "time": "16 Mei 2025 - 10:15"
-    },
-    {
-      "type": "safe",
-      "title": "Status Aman",
-      "message": "Tidak ada aktivitas hama selama 2 jam terakhir.",
-      "time": "16 Mei 2025 - 09:00"
-    },
-    {
-      "type": "info",
-      "title": "Mode Otomatis Aktif",
-      "message": "Sistem kembali ke mode otomatis.",
-      "time": "15 Mei 2025 - 17:20"
-    },
-  ];
+  const NotificationScreen({super.key});
 
-  NotificationScreen({super.key});
-
-  Color _getColor(String type) {
+  Color _getIconBgColor(String type) {
     switch (type) {
       case 'warning':
         return Colors.red.shade100;
-      case 'safe':
+      case 'success':
         return Colors.green.shade100;
       case 'info':
       default:
@@ -40,8 +20,8 @@ class NotificationScreen extends StatelessWidget {
     switch (type) {
       case 'warning':
         return Icons.warning_amber_rounded;
-      case 'safe':
-        return Icons.check_circle_outline;
+      case 'success':
+        return Icons.verified_rounded;
       case 'info':
       default:
         return Icons.info_outline;
@@ -51,82 +31,173 @@ class NotificationScreen extends StatelessWidget {
   Color _getIconColor(String type) {
     switch (type) {
       case 'warning':
-        return Colors.red;
-      case 'safe':
-        return Colors.green;
+        return Colors.red.shade700;
+      case 'success':
+        return Colors.green.shade700;
       case 'info':
       default:
-        return Colors.blue;
+        return Colors.blue.shade700;
     }
+  }
+
+  void _deleteNotification(String docId) {
+    FirebaseFirestore.instance.collection('notifications').doc(docId).delete();
   }
 
   @override
   Widget build(BuildContext context) {
+    final themeGreen = Colors.green[800]!;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Notifikasi'),
-        backgroundColor: Colors.green[700],
+        backgroundColor: themeGreen,
         foregroundColor: Colors.white,
-        elevation: 2,
+        elevation: 4,
       ),
-      body: notifications.isEmpty
-          ? const Center(
+      backgroundColor: Colors.grey.shade100,
+      body: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection('notifications')
+            .orderBy('timestamp', descending: true)
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          final docs = snapshot.data?.docs ?? [];
+
+          if (docs.isEmpty) {
+            return Center(
               child: Text(
                 'Tidak ada notifikasi',
-                style: TextStyle(fontSize: 16, color: Colors.grey),
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.grey.shade600,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
-            )
-          : ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: notifications.length,
-              itemBuilder: (context, index) {
-                final notif = notifications[index];
-                final type = notif["type"] ?? "info";
+            );
+          }
 
-                return Card(
-                  color: _getColor(type),
-                  margin: const EdgeInsets.only(bottom: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
+          return ListView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+            itemCount: docs.length,
+            itemBuilder: (context, index) {
+              final doc = docs[index];
+              final data = doc.data() as Map<String, dynamic>;
+              final type = data["type"] ?? "info";
+              final title = data["title"] ?? "-";
+              final message = data["message"] ?? "-";
+              final timestamp = data["timestamp"] as Timestamp?;
+              final time = timestamp != null
+                  ? "${timestamp.toDate().day} ${_monthName(timestamp.toDate().month)} ${timestamp.toDate().year} - ${timestamp.toDate().hour}:${timestamp.toDate().minute.toString().padLeft(2, '0')}"
+                  : "Waktu tidak tersedia";
+
+              return Dismissible(
+                key: Key(doc.id),
+                direction: DismissDirection.endToStart,
+                background: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  alignment: Alignment.centerRight,
+                  decoration: BoxDecoration(
+                    color: Colors.red.shade600,
+                    borderRadius: BorderRadius.circular(20),
                   ),
-                  elevation: 3,
+                  child: const Icon(Icons.delete_forever,
+                      color: Colors.white, size: 32),
+                ),
+                onDismissed: (direction) {
+                  _deleteNotification(doc.id);
+                  // ScaffoldMessenger.of(context).showSnackBar(
+                  //   const SnackBar(content: Text('Notifikasi dihapus')),
+                  // );
+                },
+                child: Card(
+                  color: Colors.white,
+                  margin: const EdgeInsets.only(bottom: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  elevation: 6,
                   child: ListTile(
                     contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 12),
-                    leading: Icon(
-                      _getIcon(type),
-                      color: _getIconColor(type),
-                      size: 32,
+                        horizontal: 20, vertical: 14),
+                    leading: CircleAvatar(
+                      backgroundColor: _getIconBgColor(type),
+                      child: Icon(
+                        _getIcon(type),
+                        color: _getIconColor(type),
+                        size: 28,
+                      ),
+                      radius: 24,
                     ),
                     title: Text(
-                      notif["title"]!,
-                      style: const TextStyle(
+                      title,
+                      style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize: 16,
+                        fontSize: 17,
+                        color: themeGreen.darken(0.2),
                       ),
                     ),
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const SizedBox(height: 4),
-                        Text(
-                          notif["message"]!,
-                          style: const TextStyle(fontSize: 14),
-                        ),
                         const SizedBox(height: 6),
                         Text(
-                          notif["time"]!,
-                          style: const TextStyle(
+                          message,
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey.shade800,
+                            height: 1.3,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          time,
+                          style: TextStyle(
                             fontSize: 12,
-                            color: Colors.black54,
+                            color: Colors.grey.shade600,
                           ),
                         ),
                       ],
                     ),
                   ),
-                );
-              },
-            ),
+                ),
+              );
+            },
+          );
+        },
+      ),
     );
+  }
+
+  String _monthName(int month) {
+    const months = [
+      'Januari',
+      'Februari',
+      'Maret',
+      'April',
+      'Mei',
+      'Juni',
+      'Juli',
+      'Agustus',
+      'September',
+      'Oktober',
+      'November',
+      'Desember'
+    ];
+    return months[month - 1];
+  }
+}
+
+extension ColorExtension on Color {
+  /// Darkens the color by the [amount] (0 to 1)
+  Color darken([double amount = .1]) {
+    assert(amount >= 0 && amount <= 1);
+    final hsl = HSLColor.fromColor(this);
+    final hslDark = hsl.withLightness((hsl.lightness - amount).clamp(0.0, 1.0));
+    return hslDark.toColor();
   }
 }

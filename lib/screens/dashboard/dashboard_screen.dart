@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
-import '../../widgets/thermal_heatmap.dart'; // Pastikan widget ini sudah kamu buat
+import '../../widgets/thermal_heatmap.dart';
 import '../../widgets/costum_header.dart';
 import '../notification/notification_screen.dart';
+
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -23,6 +24,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   List<double> thermalData = List.filled(64, 0.0);
 
+
   @override
   void initState() {
     super.initState();
@@ -30,22 +32,27 @@ class _DashboardScreenState extends State<DashboardScreen> {
     _sensorRef = FirebaseDatabase.instance.ref('sensor');
     _thermalRef = FirebaseDatabase.instance.ref('thermal_data');
 
+    // Listen sensor data from Realtime Database
     _sensorRef.onValue.listen((event) {
       final data = event.snapshot.value;
       if (data != null && data is Map) {
+        final sensorMap = Map<String, dynamic>.from(data);
         setState(() {
           sensorData = {
-            'PIR': (data['pir'] == true) ? 'Terdeteksi' : 'Tidak',
-            'Ultrasonik':
-                data['ultrasonik'] != null ? '${data['ultrasonik']} cm' : '-',
-            'Jenis Deteksi': data['jenis_deteksi'] != null
-                ? data['jenis_deteksi'].toString()
+            'PIR': (sensorMap['pir'] == true) ? 'Terdeteksi' : 'Tidak',
+            'Ultrasonik': sensorMap['ultrasonik'] != null
+                ? '${(sensorMap['ultrasonik'] is num ? (sensorMap['ultrasonik'] as num).round() : sensorMap['ultrasonik'])} cm'
+                : '-',
+            'Jenis Deteksi': sensorMap['jenis_deteksi'] != null
+                ? sensorMap['jenis_deteksi'].toString()
                 : 'Tidak terdeteksi',
           };
         });
       }
     });
 
+
+    // Listen thermal data from Realtime Database
     _thermalRef.onValue.listen((event) {
       final data = event.snapshot.value;
       if (data != null && data is Map) {
@@ -66,18 +73,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
     });
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[100],
       appBar: CustomHeader(
-        deviceName: 'HamaGuard',
-        notificationCount: 5,
+        deviceName: "HamaGuard",
+        isDashboard: true,
         onNotificationTap: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => NotificationScreen()),
+            MaterialPageRoute(builder: (context) => const NotificationScreen()),
           );
+
         },
       ),
       body: SingleChildScrollView(
@@ -145,7 +154,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
             ),
             const SizedBox(height: 20),
 
-            // Ganti Status Pengusir jadi Jenis Deteksi
             SensorCard(
               title: 'Jenis Deteksi',
               value: sensorData['Jenis Deteksi'] ?? '-',

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'screens/splash/splash_screen.dart';
+import 'screens/auth/login_screen.dart'; // tambahkan ini
+import 'screens/dashboard/dashboard_screen.dart'; // jika ada
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -10,7 +12,6 @@ void main() async {
       options: DefaultFirebaseOptions.currentPlatform,
     );
   } catch (e) {
-    // Bisa log error atau tampilkan pesan khusus
     debugPrint('Firebase init error: $e');
   }
 
@@ -29,7 +30,13 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
         useMaterial3: true,
       ),
-      home: const SplashScreen(),
+      initialRoute: '/', // gunakan initialRoute
+      routes: {
+        '/': (context) => const SplashScreen(),
+        '/login': (context) => const LoginScreen(),
+        '/dashboard': (context) => const DashboardScreen(), // contoh
+        // Tambahkan route lain jika ada
+      },
     );
   }
 }
