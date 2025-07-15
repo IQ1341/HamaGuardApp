@@ -34,50 +34,6 @@ class _SettingScreenState extends State<SettingScreen> {
       });
     }
   }
-
-  Future<void> _saveToDatabase(String key, double value) async {
-    await dbRef.update({key: value});
-  }
-
-  void _showInputDialog({
-    required String title,
-    required double initialValue,
-    required Function(double) onSave,
-  }) {
-    final controller = TextEditingController(text: initialValue.toString());
-
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(title),
-        content: TextField(
-          controller: controller,
-          keyboardType: TextInputType.numberWithOptions(decimal: true),
-          decoration: const InputDecoration(
-            labelText: 'Masukkan nilai',
-            border: OutlineInputBorder(),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Batal'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              final value = double.tryParse(controller.text);
-              if (value != null) {
-                onSave(value);
-                Navigator.pop(context);
-              }
-            },
-            child: const Text('Simpan'),
-          ),
-        ],
-      ),
-    );
-  }
-
   Future<void> _logout() async {
     await FirebaseAuth.instance.signOut();
     if (!mounted) return;
@@ -107,27 +63,6 @@ class _SettingScreenState extends State<SettingScreen> {
         padding: const EdgeInsets.all(16),
         children: [
           // Threshold
-          Card(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            elevation: 2,
-            child: ListTile(
-              leading: const Icon(Icons.tune),
-              title: const Text('Atur Threshold'),
-              subtitle: Text('Nilai saat ini: $threshold'),
-              onTap: () {
-                _showInputDialog(
-                  title: 'Atur Threshold',
-                  initialValue: threshold,
-                  onSave: (val) {
-                    setState(() => threshold = val);
-                    _saveToDatabase('threshold', val);
-                  },
-                );
-              },
-            ),
-          ),
-          const SizedBox(height: 16),
-
           // Tentang Aplikasi
           Card(
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
