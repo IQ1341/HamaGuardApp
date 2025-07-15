@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import '../../widgets/costum_header.dart';
+import '../notification/notification_screen.dart';
 
 class ControlScreen extends StatefulWidget {
   const ControlScreen({super.key});
@@ -99,6 +100,14 @@ class _ControlScreenState extends State<ControlScreen> {
       backgroundColor: Colors.grey[100],
       appBar: CustomHeader(
         deviceName: "HamaGuard",
+        isDashboard: true,
+        onNotificationTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const NotificationScreen()),
+          );
+
+        },
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())

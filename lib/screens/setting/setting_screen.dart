@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../widgets/costum_header.dart';
+import '../notification/notification_screen.dart';
 
 class SettingScreen extends StatefulWidget {
   const SettingScreen({super.key});
@@ -91,7 +92,17 @@ class _SettingScreenState extends State<SettingScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[100],
-      appBar: CustomHeader(deviceName: "HamaGuard"),
+      appBar: CustomHeader(
+        deviceName: "HamaGuard",
+        isDashboard: true,
+        onNotificationTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const NotificationScreen()),
+          );
+
+        },
+      ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
@@ -110,28 +121,6 @@ class _SettingScreenState extends State<SettingScreen> {
                   onSave: (val) {
                     setState(() => threshold = val);
                     _saveToDatabase('threshold', val);
-                  },
-                );
-              },
-            ),
-          ),
-          const SizedBox(height: 16),
-
-          // Kalibrasi
-          Card(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            elevation: 2,
-            child: ListTile(
-              leading: const Icon(Icons.speed),
-              title: const Text('Kalibrasi Sensor'),
-              subtitle: Text('Nilai saat ini: $calibration'),
-              onTap: () {
-                _showInputDialog(
-                  title: 'Kalibrasi Sensor',
-                  initialValue: calibration,
-                  onSave: (val) {
-                    setState(() => calibration = val);
-                    _saveToDatabase('calibration', val);
                   },
                 );
               },
