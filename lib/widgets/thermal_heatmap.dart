@@ -78,13 +78,13 @@ class _ThermalPainter extends CustomPainter {
 Color _getColorForTemp(double t) {
     if (t <= 20) {
       return Colors.blue;
-    } else if (t <= 25) {
+    } else if (t <= 27) {
       double ratio = (t - 20) / 5;
       return Color.lerp(Colors.blue, Colors.green, ratio)!;
-    } else if (t <= 28) {
+    } else if (t <= 31) {
       double ratio = (t - 25) / 3;
       return Color.lerp(Colors.green, Colors.yellow, ratio)!;
-    } else if (t < 30) {
+    } else if (t < 33) {
       double ratio = (t - 28) / 2;
       return Color.lerp(Colors.yellow, Colors.red, ratio)!;
     } else {
